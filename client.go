@@ -316,6 +316,31 @@ func (mb *client) WriteMultipleRegisters(address, quantity uint16, value []byte)
 }
 
 // Request:
+//  Function code         : 1 byte (0x11)
+// Response:
+//  Function code         : 1 byte (0x03)
+//  Byte count            : 1 byte
+//  Slave ID        			: N bytes
+func (mb *client) ReportSlaveID() (results []byte, err error) {
+	request := ProtocolDataUnit{
+		FunctionCode: FuncCodeReportSlaveID,
+	}
+
+	response, err := mb.send(&request)
+	if err != nil {
+		return
+	}
+	count := int(response.Data[0])
+	length := len(response.Data) - 1
+	if count != length {
+		err = fmt.Errorf("modbus: response data size '%v' does not match count '%v'", length, count)
+		return
+	}
+	results = response.Data[1:]
+	return
+}
+
+// Request:
 //  Function code         : 1 byte (0x16)
 //  Reference address     : 2 bytes
 //  AND-mask              : 2 bytes

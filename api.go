@@ -20,6 +20,9 @@ type Client interface {
 	// ON or OFF in a remote device and returns quantity of outputs.
 	WriteMultipleCoils(address, quantity uint16, value []byte) (results []byte, err error)
 
+	// ReportSlaveID requests the vendor specific slave ID from a remote device
+	ReportSlaveID() (results []byte, err error)
+
 	// 16-bit access
 
 	// ReadInputRegisters reads from 1 to 125 contiguous input registers in
