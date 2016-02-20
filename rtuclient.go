@@ -182,7 +182,7 @@ func calculateResponseLength(adu []byte) int {
 	case FuncCodeReadFIFOQueue:
 		// undetermined
 	case FuncCodeReportSlaveID:
-		// undetermined
+		length = 11
 
 	default:
 	}
