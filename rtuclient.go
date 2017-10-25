@@ -68,6 +68,28 @@ func (mb *rtuPackager) Encode(pdu *ProtocolDataUnit) (adu []byte, err error) {
 	return
 }
 
+func (mb *rtuPackager) EncodeBroadcast(pdu *ProtocolDataUnit) (adu []byte, err error) {
+	length := len(pdu.Data) + 4
+	if length > rtuMaxSize {
+		err = fmt.Errorf("modbus: length of data '%v' must not be bigger than '%v'", length, rtuMaxSize)
+		return
+	}
+	adu = make([]byte, length)
+
+	adu[0] = 0
+	adu[1] = pdu.FunctionCode
+	copy(adu[2:], pdu.Data)
+
+	// Append crc
+	var crc crc
+	crc.reset().pushBytes(adu[0 : length-2])
+	checksum := crc.value()
+
+	adu[length-2] = byte(checksum >> 8)
+	adu[length-1] = byte(checksum)
+	return
+}
+
 // Verify verifies response length and slave id.
 func (mb *rtuPackager) Verify(aduRequest []byte, aduResponse []byte) (err error) {
 	length := len(aduResponse)
@@ -139,6 +161,23 @@ func (mb *rtuSerialTransporter) Send(aduRequest []byte) (aduResponse []byte, err
 	if mb.Logger != nil {
 		mb.Logger.Printf("modbus: received % x\n", aduResponse)
 	}
+	return
+}
+
+func (mb *rtuSerialTransporter) SendBroadcast(aduRequest []byte) (err error) {
+	if !mb.isConnected {
+		if err = mb.Connect(); err != nil {
+			return
+		}
+		defer mb.Close()
+	}
+	if mb.Logger != nil {
+		mb.Logger.Printf("modbus: sending % x\n", aduRequest)
+	}
+	if _, err = mb.port.Write(aduRequest); err != nil {
+		return
+	}
+
 	return
 }
 

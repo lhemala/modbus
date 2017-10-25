@@ -315,6 +315,21 @@ func (mb *client) WriteMultipleRegisters(address, quantity uint16, value []byte)
 	return
 }
 
+func (mb *client) BroadcastMultipleRegisters(address, quantity uint16, value []byte) (err error) {
+	if quantity < 1 || quantity > 123 {
+		err = fmt.Errorf("modbus: quantity '%v' must be between '%v' and '%v',", quantity, 1, 123)
+		return
+	}
+	request := ProtocolDataUnit{
+		FunctionCode: FuncCodeWriteMultipleRegisters,
+		Data:         dataBlockSuffix(value, address, quantity),
+	}
+	err = mb.broadcast(&request)
+	if err != nil {
+		return
+	}
+	return
+}
 // Request:
 //  Function code         : 1 byte (0x11)
 // Response:
@@ -484,6 +499,18 @@ func (mb *client) send(request *ProtocolDataUnit) (response *ProtocolDataUnit, e
 	if response.Data == nil || len(response.Data) == 0 {
 		// Empty response
 		err = fmt.Errorf("modbus: response data is empty")
+		return
+	}
+	return
+}
+
+func (mb *client) broadcast(request *ProtocolDataUnit) (err error) {
+	aduRequest, err := mb.packager.Encode(request)
+	if err != nil {
+		return
+	}
+	err = mb.transporter.SendBroadcast(aduRequest)
+	if err != nil {
 		return
 	}
 	return

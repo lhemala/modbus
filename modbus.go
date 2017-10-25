@@ -27,6 +27,14 @@ const (
 	FuncCodeReadWriteMultipleRegisters = 23
 	FuncCodeMaskWriteRegister          = 22
 	FuncCodeReadFIFOQueue              = 24
+
+	FuncCodeReadExceptionStatus                 = 7
+	FuncCodeDiagnostic                          = 8
+	FuncCodeGetComEventCounter                  = 11
+	FuncCodeGetComEventLog                      = 12
+	FuncCodeReportSlaveId                       = 17
+	FuncCodeReadDeviceIdentification            = 43
+	FuncCodeOtherEncapsulatedInterfaceTransport = 43
 )
 
 const (
@@ -84,6 +92,7 @@ type ProtocolDataUnit struct {
 // Packager specifies the communication layer.
 type Packager interface {
 	Encode(pdu *ProtocolDataUnit) (adu []byte, err error)
+	EncodeBroadcast(pdu *ProtocolDataUnit) (adu []byte, err error)
 	Decode(adu []byte) (pdu *ProtocolDataUnit, err error)
 	Verify(aduRequest []byte, aduResponse []byte) (err error)
 }
@@ -91,4 +100,5 @@ type Packager interface {
 // Transporter specifies the transport layer.
 type Transporter interface {
 	Send(aduRequest []byte) (aduResponse []byte, err error)
+	SendBroadcast(aduRequest []byte) (err error)
 }

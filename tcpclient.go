@@ -77,6 +77,10 @@ func (mb *tcpPackager) Encode(pdu *ProtocolDataUnit) (adu []byte, err error) {
 	return
 }
 
+func (mb *tcpPackager) EncodeBroadcast(pdu *ProtocolDataUnit) (adu []byte, err error) {
+	panic("not implemented")
+}
+
 // Verify confirms transaction, protocol and unit id.
 func (mb *tcpPackager) Verify(aduRequest []byte, aduResponse []byte) (err error) {
 	// Transaction id
@@ -180,6 +184,10 @@ func (mb *tcpTransporter) Send(aduRequest []byte) (aduResponse []byte, err error
 		mb.Logger.Printf("modbus: received % x\n", aduResponse)
 	}
 	return
+}
+
+func (mb *tcpTransporter) SendBroadcast(aduRequest []byte) (err error) {
+	panic("not implemented")
 }
 
 // Connect establishes a new connection to the address in Address.

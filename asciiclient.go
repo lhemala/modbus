@@ -77,6 +77,10 @@ func (mb *asciiPackager) Encode(pdu *ProtocolDataUnit) (adu []byte, err error) {
 	return
 }
 
+func (mb *asciiPackager) EncodeBroadcast(pdu *ProtocolDataUnit) (adu []byte, err error) {
+	panic("not implemented")
+}
+
 // Verify verifies response length, frame boundary and slave id.
 func (mb *asciiPackager) Verify(aduRequest []byte, aduResponse []byte) (err error) {
 	length := len(aduResponse)
@@ -196,6 +200,10 @@ func (mb *asciiSerialTransporter) Send(aduRequest []byte) (aduResponse []byte, e
 		mb.Logger.Printf("modbus: received %q\n", aduResponse)
 	}
 	return
+}
+
+func (mb *asciiSerialTransporter) SendBroadcast(aduRequest []byte) (err error) {
+	panic("not implemented")
 }
 
 // writeHex encodes byte to string in hexadecimal, e.g. 0xA5 => "A5"
