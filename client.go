@@ -505,7 +505,7 @@ func (mb *client) send(request *ProtocolDataUnit) (response *ProtocolDataUnit, e
 }
 
 func (mb *client) broadcast(request *ProtocolDataUnit) (err error) {
-	aduRequest, err := mb.packager.Encode(request)
+	aduRequest, err := mb.packager.EncodeBroadcast(request)
 	if err != nil {
 		return
 	}
